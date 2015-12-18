@@ -1,0 +1,40 @@
+#homeimg{
+width: 300px;
+}
+
+
+
+.bilderlink
+{
+cursor: pointer;
+}
+
+#prev{
+position: fixed;
+top: 0px;
+left: 0px;
+right: 0px;
+bottom: 0px;
+background: rgba(0,0,0,0.85);
+}
+#bigpic{
+cursor: pointer;
+border-style: solid;
+border-color:#ffffff;
+border-width: 3px;
+box-shadow: 0px 0px 15px #ffffff;
+position: relative;
+top: 50px;
+max-width: 75%;
+max-height: 75%;
+}
+
+.blogpost{
+position: relative;
+margin: auto;
+box-shadow: 0px 0px 5px #000000;
+min-width: 1000px;
+padding: 10px;
+max-width: 50%;
+background: #ffffff;
+}

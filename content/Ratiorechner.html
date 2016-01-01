@@ -1,0 +1,52 @@
+<div id='main'>
+<table style="margin:auto">
+<tr><td>Breite</td><td><input type="text" id="width" value="1920"></td><td><input type="button" id="get_width" value="Fill"><br></td></tr>
+<tr><td>Höhe</td><td><input type="text" id="height" value="1080"></td><td><input type="button" id="get_height" value="Fill"><br></td></tr>
+<tr><td>Ratio</td><td><input type="text" id="ratio" value="16:9"></td><td><input type="button" id="get_ratio" value="Fill"><br></td></tr>
+</table>
+<script>
+
+function ggt(a,b)
+  {
+   var r;
+   do
+    {
+      r = a % b;
+      a=b;
+      b=r;
+    }
+   while (r>0);
+   return a;
+  }
+
+
+$('#get_width').click(function(){
+var height = $('#height').val();
+var ratio_base = $('#ratio').val();
+var ratio = ratio_base.split(":");
+$('#width').val(height * ratio[0] / ratio[1]);
+});
+
+$('#get_height').click(function(){
+var width = $('#width').val();
+var ratio_base = $('#ratio').val();
+var ratio = ratio_base.split(":");
+$('#height').val(width * ratio[1] / ratio[0]);
+});
+
+$('#get_ratio').click(function(){
+var width = $('#width').val();
+var height = $('#height').val();
+
+var teiler = ggt(width, height);
+var ratioW = width / teiler;
+var ratioH = height / teiler;
+$('#ratio').val(ratioW + ":" + ratioH);
+
+
+
+});
+</script>
+
+
+</div>

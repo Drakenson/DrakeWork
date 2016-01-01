@@ -7,18 +7,12 @@ class worker
 
 	private $DW_Title = '';
 	private $DW_Construct = array();
-	private $DW_Theme = '';
+	private $DW_Theme = array();
 	private $DW_Content = '';
 	private $DW_Scripts = '';
 	private $DW_Filelist = array();
 	private $DW_Themefiles = array();
 	
-	private $DW_Themehead;
-	private $DW_Themebodyhead;
-	private $DW_Themebodyfoot;
-	
-
-
 	function __construct($DW_Title, $DW_Themerequest, $DW_Filerequest, $DW_Scriptrequest, $DW_Construct, $DW_Themefiles){
 		$this->DW_Title = $DW_Title;
 		$this->DW_Themerequest = $DW_Themerequest;	
@@ -54,21 +48,31 @@ class worker
  	
 	private function load_theme() {
 		
-		$this->DW_Themehead =  $this->DW_Themefiles['head']['head'];
-		$this->DW_Themebodyhead =  $this->DW_Themefiles['bodyhead']['head'];
-		$this->DW_Themebodyhead .= $this->DW_Themefiles['bodyhead']['linkshead'];
+		$control = $this->DW_Themefiles['control'];
 		
-		Foreach ($this->DW_Filelist as $file)
+		$parts = explode("|", $control);
+		foreach ($parts as $part)
 		{
-			$content = $this->DW_Themefiles['bodyhead']['linksmain'];
-			$content = str_replace("[PAGE]", pathinfo($file)['filename'] , $content);
-			$content = str_replace("[THEME]", "{$this->DW_Themerequest}" , $content);
-			$this->DW_Themebodyhead .= $content;
+			$objects = explode("&", $part);
+			foreach ($objects as $object)
+			{
+				$section = substr($objects[0],1);
+				if (!isset($this->DW_Theme[$section])) $this->DW_Theme[$section] = '';
+				if ($object[0] <> "$" && $object[0] <> "%") $this->DW_Theme[$section] .= $this->DW_Themefiles[$section][$object];
+				if ($object[0] == "%")
+				{
+					$object = substr($object,1);
+					Foreach ($this->DW_Filelist as $file)
+					{
+						$content = $this->DW_Themefiles[$section][$object];
+						$content = str_replace("[PAGE]", pathinfo($file)['filename'] , $content);
+						$content = str_replace("[THEME]", "{$this->DW_Themerequest}" , $content);
+						$this->DW_Theme[$section] .= $content;
+					}
+				}
+			}
+			
 		}
-		
-		$this->DW_Themebodyhead .= $this->DW_Themefiles['bodyhead']['linksfoot'];
-		$this->DW_Themebodyhead .= $this->DW_Themefiles['bodyhead']['mainstart'];
-		$this->DW_Themebodyfoot .= $this->DW_Themefiles['bodyfoot']['mainend'];
 	}
 	
 	private function load_basic_content() {
@@ -96,10 +100,10 @@ class worker
 		$base = $this->DW_Construct['base'];
 		$base = str_replace("##TITLE##", $this->DW_Title, $base);
 		$base = str_replace("##SCRIPTS##", $this->DW_Scripts, $base);
-		$base = str_replace("##THEMEHEAD##", $this->DW_Themehead, $base);
-		$base = str_replace("##THEMEBODYHEAD##", $this->DW_Themebodyhead, $base);
+		$base = str_replace("##THEME_HEAD##", $this->DW_Theme['THEME_HEAD'], $base);
+		$base = str_replace("##THEME_BODY_BEFORE_CONTENT##", $this->DW_Theme['THEME_BODY_BEFORE_CONTENT'], $base);
 		$base = str_replace("##CONTENT##", $this->DW_Content, $base);
-		$base = str_replace("##THEMEBODYFOOT##", $this->DW_Themebodyfoot, $base);
+		$base = str_replace("##THEME_BODY_AFTER_CONTENT##", $this->DW_Theme['THEME_BODY_AFTER_CONTENT'], $base);
 		$base = $this->macros($base);
 		return $base;
 	}

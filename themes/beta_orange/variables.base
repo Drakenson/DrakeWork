@@ -1,19 +1,15 @@
 <?php
-$themehead = array();
-$themebodyhead = array();
-$themebodyfoot = array();
-$themehead['head'] = '<link rel="stylesheet" type="text/css" href="themes/[THEME]/style/base.css"><link rel="stylesheet" type="text/css" href="themes/[THEME]/style/style.css">';
+$theme = array();
 
-$themebodyhead['head'] = "<div id='header'></div><a href='index.php'><h1 id='title'>[TITLE]</h1></a><script>$('#header').parallax({imageSrc: 'themes/[THEME]/style/header.jpg', positionY: '0px', speed: '2' });</script>";
-$themebodyhead['linkshead'] = '<div id="links"><table id="link"><tr>';
-$themebodyhead['linksmain'] = '<td><a href="index.php?theme=[THEME]&page=[PAGE]"><div>[PAGE]</div></a></td>';
-$themebodyhead['linksfoot'] = '</tr></table></div>';
-$themebodyhead['mainstart'] = "<div id='main'>";
+$theme['control'] = '$THEME_HEAD&head|$THEME_BODY_BEFORE_CONTENT&head&linkshead&%linksmain&linksfoot&mainstart|$THEME_BODY_AFTER_CONTENT&mainend';
 
-$themebodyfoot['mainend'] = '</div>';
+$theme['THEME_HEAD']['head'] = '<link rel="stylesheet" type="text/css" href="themes/[THEME]/style/base.css"><link rel="stylesheet" type="text/css" href="themes/[THEME]/style/style.css">';
 
-$theme = array(
-	"head" => $themehead, 
-	"bodyhead" => $themebodyhead,
-	"bodyfoot" => $themebodyfoot);
+$theme['THEME_BODY_BEFORE_CONTENT']['head'] = "<div id='header'></div><a href='index.php'><h1 id='title'>[TITLE]</h1></a><script>$('#header').parallax({imageSrc: 'themes/[THEME]/style/header.jpg', positionY: '0px', speed: '2' });</script>";
+$theme['THEME_BODY_BEFORE_CONTENT']['linkshead'] = '<div id="links"><table id="link"><tr>';
+$theme['THEME_BODY_BEFORE_CONTENT']['linksmain'] = '<td><a href="index.php?theme=[THEME]&page=[PAGE]"><div>[PAGE]</div></a></td>';
+$theme['THEME_BODY_BEFORE_CONTENT']['linksfoot'] = '</tr></table></div>';
+$theme['THEME_BODY_BEFORE_CONTENT']['mainstart'] = "<div id='main'>";
+$theme['THEME_BODY_AFTER_CONTENT']['mainend'] = '</div>';
+
 ?>

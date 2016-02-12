@@ -1,72 +1,62 @@
 @import url(https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600);
 
-body
-{
+body {
 background-color: #F7F7F7;
-background-attachment:fixed;
 font-family: 'Source Sans Pro', sans-serif;
-overflow-y: scroll;
-
+ width: 100%;
+height: auto;
+margin: 0px;
+padding: 0px;
+overflow-x: hidden;
 }
 
 #header
 {
 position: relative;
-top: -10px;
-left: -11px;
-width: 101%;
-height: 450px;
+height: 350px;
 overflow: hidden;
-background-size: cover;
+top: 0px;
 }
 
-#title
-{
-position: absolute;
+#title {
+position: relative;
+float:left;
 top: 20px;
 left: 50px;
-text-align: center;
-vertical-align: middle;
-color: #ffffff;
-}
-#link
-{
-border-spacing: 10px;
-
+color: #F7F7F7;
+z-index: 1;
 }
 
-#links
-{
-position: absolute;
-top: 40px;
+#links_div {
+position: relative;
+float:right;
+top: 45px;
 right: 50px;
 text-align: center;
 vertical-align: middle;
-color: #ffffff;
+z-index: 1;
 }
-
-#links a
-{
-color: #ffffff;
+#links_table {
+border-spacing: 10px;
+}
+.cleanlink {
 text-decoration: none;
 }
-
-#links a:hover
-{
+.link {
+color: #F7F7F7;
+}
+.link:hover {
 color: #555555;
 }
 
-a{
-color: #555555;
+#logo {
+position: relative;
+top: -175px;
+width: 100%;
+z-index: 0;
 }
 
-a:hover
-{
-color: #000000;
-}
-
-#main
-{
+#main {
 text-align: center;
 margin: auto;
 position: relative;
@@ -75,6 +65,6 @@ max-width: 75%;
 top: 50px;
 }
 
-p{
+p {
 color: #555555;
 }

@@ -6,21 +6,17 @@ class worker
 	private $DW_Scriptrequest = '';
 
 	private $DW_Title = '';
-	private $DW_Construct = array();
-	private $DW_Theme = array();
-	private $DW_Content = '';
-	private $DW_Scripts = '';
+	private $DW_Construct = "<!DOCTYPE html><html><head><title>##TITLE##</title>##SCRIPTS####THEME_HEAD####CUSTOM_STYLE##</head><body>##THEME_BODY_BEFORE_CONTENT####CONTENT####THEME_BODY_AFTER_CONTENT##</body></html>";
+	private $DW_Customstyle = "";
 	private $DW_Filelist = array();
-	private $DW_Themefiles = array();
 	
-	function __construct($DW_Title, $DW_Themerequest, $DW_Filerequest, $DW_Scriptrequest, $DW_Construct, $DW_Themefiles){
+	function __construct($DW_Title, $DW_Themerequest, $DW_Filerequest, $DW_Scriptrequest, $DW_Customstyle){
 		$this->DW_Title = $DW_Title;
 		$this->DW_Themerequest = $DW_Themerequest;	
 		$this->DW_Filerequest = $DW_Filerequest;	
-		$this->DW_Scriptrequest = $DW_Scriptrequest;	
-		$this->DW_Construct = $DW_Construct;
-		$this->DW_Themefiles = $DW_Themefiles;
-		$this->get_filelist();
+		$this->DW_Scriptrequest = $DW_Scriptrequest;
+		$this->DW_Customstyle = $DW_Customstyle;
+		$this->DW_Filelist = $this->get_filelist();
 	}
 	
 	private function get_filelist()	{
@@ -36,20 +32,20 @@ class worker
 			}
 		}
 		closeDir($contentfolder);
-		$this->DW_Filelist = $filelist;
+		return $filelist;
 	}		
-	
-	private function load_scripts()	{
-		foreach ($this->DW_Scriptrequest as $script)
+	private function load_scripts($scriptrequest)	{
+		foreach ($scriptrequest as $script)
 		{
-			$this->DW_Scripts .= file_get_contents("scripts/{$script}/script.base");
+			$scripts .= file_get_contents("scripts/{$script}/script.base");
 		}
+		return $scripts;
 	}
- 	
-	private function load_theme() {
-		
-		$control = $this->DW_Themefiles['control'];
-		
+	private function load_theme($themerequest, $filelist) {
+		$textfile = file_get_contents("themes/{$themerequest}/variables.json");
+		$theme = '';
+		$config = json_decode($textfile, true);
+		$control = $config['THEME_CONTROL'];
 		$parts = explode("|", $control);
 		foreach ($parts as $part)
 		{
@@ -57,31 +53,23 @@ class worker
 			foreach ($objects as $object)
 			{
 				$section = substr($objects[0],1);
-				if (!isset($this->DW_Theme[$section])) $this->DW_Theme[$section] = '';
-				if ($object[0] <> "$" && $object[0] <> "%") $this->DW_Theme[$section] .= $this->DW_Themefiles[$section][$object];
-				if ($object[0] == "%")
-				{
+				if ($object[0] <> "$" && $object[0] <> "%") $theme[$section] .= $config["$section"]["$object"];
+				if ($object[0] == "%") {
 					$object = substr($object,1);
-					Foreach ($this->DW_Filelist as $file)
-					{
-						$content = $this->DW_Themefiles[$section][$object];
+					Foreach ($filelist as $file) {
+						$content = $config[$section][$object];
 						$content = str_replace("[PAGE]", pathinfo($file)['filename'] , $content);
-						$content = str_replace("[THEME]", "{$this->DW_Themerequest}" , $content);
-						$this->DW_Theme[$section] .= $content;
+						$theme[$section] .= $content;
 					}
 				}
 			}
-			
 		}
+		return $theme;
 	}
-	
-	private function load_basic_content() {
-		$this->DW_Content = file_get_contents("content/".$this->DW_Filelist[$this->DW_Filerequest]);
+	private function load_basic_content($filelist, $filerequest) {
+		return file_get_contents("content/".$filelist["$filerequest"]);
 	}
-	
-
 	private function macros($base) {
-		
 		$base = str_replace("[REMOTE_ADDR]", $_SERVER['REMOTE_ADDR'], $base);
 		$base = str_replace("[HTTP_HOST]", $_SERVER["HTTP_HOST"], $base);
 		$base = str_replace("[HTTP_USER_AGENT]", $_SERVER["HTTP_USER_AGENT"], $base);
@@ -94,16 +82,18 @@ class worker
 	}
 	
 	function build_site() {
-		$this->load_theme();
-		$this->load_basic_content();
-		$this->load_scripts();
-		$base = $this->DW_Construct['base'];
+		$theme = $this->load_theme($this->DW_Themerequest, $this->DW_Filelist);
+		$scripts = $this->load_scripts($this->DW_Scriptrequest);
+		$content = $this->load_basic_content($this->DW_Filelist, $this->DW_Filerequest);
+		$base = $this->DW_Construct;
+		
 		$base = str_replace("##TITLE##", $this->DW_Title, $base);
-		$base = str_replace("##SCRIPTS##", $this->DW_Scripts, $base);
-		$base = str_replace("##THEME_HEAD##", $this->DW_Theme['THEME_HEAD'], $base);
-		$base = str_replace("##THEME_BODY_BEFORE_CONTENT##", $this->DW_Theme['THEME_BODY_BEFORE_CONTENT'], $base);
-		$base = str_replace("##CONTENT##", $this->DW_Content, $base);
-		$base = str_replace("##THEME_BODY_AFTER_CONTENT##", $this->DW_Theme['THEME_BODY_AFTER_CONTENT'], $base);
+		$base = str_replace("##SCRIPTS##", $scripts , $base);
+		$base = str_replace("##THEME_HEAD##", $theme['THEME_HEAD'], $base);
+		$base = str_replace("##CUSTOM_STYLE##", "<link rel='stylesheet' type='text/css' href='$this->DW_Customstyle'>", $base);
+		$base = str_replace("##THEME_BODY_BEFORE_CONTENT##", $theme['THEME_BODY_BEFORE_CONTENT'], $base);
+		$base = str_replace("##CONTENT##", $content, $base);
+		$base = str_replace("##THEME_BODY_AFTER_CONTENT##", $theme['THEME_BODY_AFTER_CONTENT'], $base);
 		$base = $this->macros($base);
 		return $base;
 	}

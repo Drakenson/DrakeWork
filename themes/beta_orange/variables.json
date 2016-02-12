@@ -1,0 +1,17 @@
+{
+	"THEME_CONTROL": "$THEME_HEAD&styles|$THEME_BODY_BEFORE_CONTENT&header&linkshead&%linksmain&linksfoot&headerfoot&mainstart|$THEME_BODY_AFTER_CONTENT&mainend",
+	"THEME_HEAD": {
+		"styles": "<link rel='stylesheet' type='text/css' href='themes/[THEME]/style/base.css'>"
+	},
+	"THEME_BODY_BEFORE_CONTENT": {
+		"header": "<div id='header'><a href='index.php?theme=[THEME]' class='cleanlink'><h1 id='title'>[TITLE]</h1></a>",
+		"linkshead": "<div id='links_div'><table id='links_table'><tr>",
+		"linksmain": "<td><a class='cleanlink link' href='index.php?theme=[THEME]&page=[PAGE]'>[PAGE]</a></td>",
+		"linksfoot": "</tr></table></div>",
+		"headerfoot": "<img id='logo' src='themes/[THEME]/style/header.jpg'></div>",
+		"mainstart": "<div id='main'>"
+	},
+	"THEME_BODY_AFTER_CONTENT": {
+		"mainend": "</div>"
+	}
+}
